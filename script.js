@@ -1,29 +1,50 @@
+/**
+ * Adds a new recommendation card to the recommendations section.
+ * Validates that the textarea is not empty before proceeding.
+ */
 function addRecommendation() {
-  // Get the message of the new recommendation
-  let recommendation = document.getElementById("new_recommendation");
-  // If the user has left a recommendation, display a pop-up
-  if (recommendation.value != null && recommendation.value.trim() != "") {
-    console.log("New recommendation added");
-    //Call showPopup here
+  const recommendationInput = document.getElementById("new_recommendation");
 
-    // Create a new 'recommendation' element and set it's value to the user's message
-    var element = document.createElement("div");
-    element.setAttribute("class","recommendation");
-    element.innerHTML = "\<span\>&#8220;\</span\>" + recommendation.value + "\<span\>&#8221;\</span\>";
-    // Add this element to the end of the list of recommendations
-    document.getElementById("all_recommendations").appendChild(element); 
-    
-    // Reset the value of the textarea
-    recommendation.value = "";
+  if (!recommendationInput || recommendationInput.value.trim() === "") {
+    return;
+  }
 
-    showPopup(true)
+  // Create and populate the new recommendation element
+  const element = document.createElement("div");
+  element.setAttribute("class", "recommendation");
+  element.innerHTML =
+    "<span>&#8220;</span>" +
+    escapeHTML(recommendationInput.value.trim()) +
+    "<span>&#8221;</span>";
+
+  // Append to the recommendations list
+  document.getElementById("all_recommendations").appendChild(element);
+
+  // Reset the textarea
+  recommendationInput.value = "";
+
+  // Show the thank-you popup
+  showPopup(true);
+}
+
+/**
+ * Controls the visibility of the thank-you popup.
+ * @param {boolean} visible - Whether to show (true) or hide (false) the popup.
+ */
+function showPopup(visible) {
+  const popup = document.getElementById("popup");
+  if (popup) {
+    popup.style.visibility = visible ? "visible" : "hidden";
   }
 }
 
-function showPopup(bool) {
-  if (bool) {
-    document.getElementById('popup').style.visibility = 'visible'
-  } else {
-    document.getElementById('popup').style.visibility = 'hidden'
-  }
+/**
+ * Escapes HTML special characters to prevent XSS when inserting user input into the DOM.
+ * @param {string} str - The raw user input string.
+ * @returns {string} - The sanitised string safe for innerHTML insertion.
+ */
+function escapeHTML(str) {
+  const div = document.createElement("div");
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
 }
